@@ -1,5 +1,13 @@
 <template>
 	<div>
-		<h1>Title</h1>
+		<h1>{{title}}</h1>
+		<p>{{content}}</p>
+		<p>{{price}}</p>
 	</div>
 </template>
+
+<script>
+	export default {
+		props: {"title": String,"content": String, "price": Number}
+	}
+</script>

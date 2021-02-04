@@ -4,7 +4,7 @@
       <router-link class="navbar-brand mr-auto" :to="{name: 'home'}">LaravelBnb</router-link>
 
       <ul class="navbar-nav">
-        <li class="nav-item">
+<!--         <li class="nav-item">
           <router-link class="nav-link" :to="{name: 'basket'}">
             Basket
             <span v-if="itemsInBasket" class="badge badge-secondary">{{ itemsInBasket }}</span>
@@ -21,7 +21,7 @@
 
         <li class="nav-item" v-if="isLoggedIn">
           <a class="nav-link" href="#" @click.prevent="logout">Logout</a>
-        </li>
+        </li> -->
       </ul>
     </nav>
 
