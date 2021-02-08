@@ -1,6 +1,16 @@
 <template>
 	<div>
-		<bookable-list-item :title="bookable1.title" content="Content Props" :price="1000"></bookable-list-item>	
+		<div v-if="!bookables">data is loading</div>
+		<div>
+			<bookable-list-item 
+				:title="bookable.title" 
+				:content="bookable.content" 
+				:price="1000"
+				v-for="(bookable, index) in bookables"
+				:key="index"
+			>
+			</bookable-list-item>
+		</div>			
 	</div>
 </template>
 
@@ -13,24 +23,22 @@
 		},
 		data() {
 			return {
-				bookable1:{
-					title: "Item 1",
-					content: "Content 1"
-				},
-				bookable2:{
-					title: "Item 2",
-					content: "Content 2"
-				},
+				bookables: null,
 			}
 		},
-		created() {
-			console.log('created')
-			console.log(this.bookable1)
-			console.log(this.bookable2)
-
+		created() { 
 			setTimeout(() => {
-				this.bookable1.title = 'setTimeout'
-			}, 5000)
+				this.bookables = [
+					{
+						title: "Item 1",
+						content: "Content 1"
+					},
+					{
+						title: "Item 2",
+						content: "Content 2"
+					}
+				];
+			}, 5000) 
 		}
 	}
 </script>
