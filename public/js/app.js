@@ -1966,6 +1966,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     "title": String,
@@ -2002,6 +2004,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   components: {
@@ -2009,8 +2015,22 @@ __webpack_require__.r(__webpack_exports__);
   },
   data: function data() {
     return {
-      bookables: null
+      bookables: null,
+      columns: 3
     };
+  },
+  computed: {
+    rows: function rows() {
+      return this.bookables == null ? 0 : Math.ceil(this.bookables.length / this.columns);
+    }
+  },
+  methods: {
+    bookablesInRow: function bookablesInRow(row) {
+      return this.bookables.slice((row - 1) * this.columns, row * this.columns);
+    },
+    placeholdersInRow: function placeholdersInRow(row) {
+      return this.columns - this.bookablesInRow(row).length;
+    }
   },
   created: function created() {
     var _this = this;
@@ -2022,8 +2042,23 @@ __webpack_require__.r(__webpack_exports__);
       }, {
         title: "Item 2",
         content: "Content 2"
+      }, {
+        title: "Item 2",
+        content: "Content 2"
+      }, {
+        title: "Item 2",
+        content: "Content 2"
+      }, {
+        title: "Item 2",
+        content: "Content 2"
+      }, {
+        title: "Item 2",
+        content: "Content 2"
+      }, {
+        title: "Item 2",
+        content: "Content 2"
       }];
-    }, 5000);
+    }, 1000);
   }
 });
 
@@ -37718,12 +37753,12 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", [
-    _c("h1", [_vm._v(_vm._s(_vm.title))]),
-    _vm._v(" "),
-    _c("p", [_vm._v(_vm._s(_vm.content))]),
-    _vm._v(" "),
-    _c("p", [_vm._v(_vm._s(_vm.price))])
+  return _c("div", { staticClass: "card" }, [
+    _c("div", { staticClass: "card-body" }, [
+      _c("h5", { staticClass: "card-title" }, [_vm._v(_vm._s(_vm.title))]),
+      _vm._v(" "),
+      _c("p", { staticClass: "card-text" }, [_vm._v(_vm._s(_vm.content))])
+    ])
   ])
 }
 var staticRenderFns = []
@@ -37753,17 +37788,39 @@ var render = function() {
     _vm._v(" "),
     _c(
       "div",
-      _vm._l(_vm.bookables, function(bookable, index) {
-        return _c("bookable-list-item", {
-          key: index,
-          attrs: {
-            title: bookable.title,
-            content: bookable.content,
-            price: 1000
-          }
-        })
+      _vm._l(_vm.rows, function(row) {
+        return _c(
+          "div",
+          { key: "row" + row, staticClass: "row mb-4" },
+          [
+            _vm._l(_vm.bookablesInRow(row), function(bookable, column) {
+              return _c(
+                "div",
+                { key: "row" + row + column, staticClass: "col" },
+                [
+                  _c("bookable-list-item", {
+                    attrs: {
+                      title: bookable.title,
+                      content: bookable.content,
+                      price: 1000
+                    }
+                  })
+                ],
+                1
+              )
+            }),
+            _vm._v(" "),
+            _vm._l(_vm.placeholdersInRow(row), function(p) {
+              return _c("div", {
+                key: "placeholder" + row + p,
+                staticClass: "col"
+              })
+            })
+          ],
+          2
+        )
       }),
-      1
+      0
     )
   ])
 }
