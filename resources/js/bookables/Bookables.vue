@@ -2,16 +2,14 @@
 	<div>
 		<div v-if="!bookables">data is loading</div>
 		<div>
-			<div class="row mb-4" v-for="row in rows" :key="'row'+row">
-				<div class="col" v-for="(bookable, column) in bookablesInRow(row)" :key="'row' + row + column">
-					<bookable-list-item 
-						:title="bookable.title" 
-						:content="bookable.content" 
-						:price="1000"
+			<div class="row mb-4 " v-for="row in rows" :key="'row'+row">
+				<div class="col d-flex align-items-stretch" v-for="(bookable, column) in bookablesInRow(row)" :key="'row' + row + column">
+					<bookable-list-item
+						v-bind="bookable"
 					>
 					</bookable-list-item>
 				</div>
-				<div class="col" v-for="p in placeholdersInRow(row)" :key="'placeholder'+ row + p"></div>
+				<div class="col d-flex align-items-stretch" v-for="p in placeholdersInRow(row)" :key="'placeholder'+ row + p"></div>
 			</div>
 			
 		</div>			
@@ -45,38 +43,10 @@
 			}
 		},
 		created() { 
-			setTimeout(() => {
-				this.bookables = [
-					{
-						title: "Item 1",
-						content: "Content 1"
-					},
-					{
-						title: "Item 2",
-						content: "Content 2"
-					},
-					{
-						title: "Item 2",
-						content: "Content 2"
-					},
-					{
-						title: "Item 2",
-						content: "Content 2"
-					},
-					{
-						title: "Item 2",
-						content: "Content 2"
-					},
-					{
-						title: "Item 2",
-						content: "Content 2"
-					},
-					{
-						title: "Item 2",
-						content: "Content 2"
-					}
-				];
-			}, 1000) 
+			const request = axios
+				.get('/api/bookables')
+				.then(responce => (this.bookables = responce.data))
+			console.log(request)
 		}
 	}
 </script>
