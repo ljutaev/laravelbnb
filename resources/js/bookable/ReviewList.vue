@@ -9,11 +9,13 @@
 					<div class="col-md-6">
 						Sasha Ljutaev
 					</div>
-					<div class="col-md-6 d-flex justify-content-end">{{review.rating}}</div>
+					<div class="col-md-6 d-flex justify-content-end">
+						<star-rating :value="review.rating"/>
+					</div>
 				</div>
 				<div class="row">
 					<div class="col-md-12">
-						{{review.created_at}}
+						{{ review.created_at | fromNow }}
 					</div>
 				</div>
 				<div class="row pt-4 pb-4">
@@ -42,8 +44,6 @@
 			axios.get(`/api/bookables/${this.bookableId}/reviews`)
 				.then(response => (this.reviews = response.data))
 				.then(() => (this.loading = false))
-
-
 		}
 	}
 </script>
