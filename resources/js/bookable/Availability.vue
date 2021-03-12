@@ -2,8 +2,11 @@
 	<div>
 		<h6 class="text-uppercase text-secondary font-weight-bolder">
 			Check Availability
-			<span v-if="noAvailability" class="text-danger">Not Available</span>
-			<span v-if="hasAvailability" class="text-success">Available</span>
+			<transition name="fade">
+				<span v-if="noAvailability" class="text-danger">Not Available</span>
+				<span v-if="hasAvailability" class="text-success">Available</span>
+			</transition>
+			
 		</h6>
 
 		<div class="form-row">
@@ -34,7 +37,11 @@
 				<div class="invalid-feedback" v-for="(error, index) in this.errorFor('to')" :key="'from'+index">{{error}}</div>
 			</div>
 		</div>
-		<button class="btn btn-secondary btn-block" @click="check" :disabled="loading">Check!</button>
+		<button class="btn btn-secondary btn-block" @click="check" :disabled="loading">
+			<span v-if="!loading">Check!</span>
+      <span v-if="loading">
+        <i class="fas fa-circle-notch fa-spin"></i> Checking...
+      </span></button>
 	</div>
 </template>
 
@@ -59,7 +66,7 @@
 				this.loading = true
 				this.errors = null
 
-				this.$store.commit('setLastSearch', {
+				this.$store.dispatch('setLastSearch', {
 					from: this.from,
 					to: this.to
 				})

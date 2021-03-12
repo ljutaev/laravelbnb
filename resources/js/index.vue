@@ -32,9 +32,18 @@
 </template>
 
 <script>
-    export default {
-        mounted() {
-            console.log('Index mounted.')
-        }
+import {mapState} from 'vuex'
+
+export default {
+    data() {
+      return {
+        lastSearch: this.$store.state.lastSearch
+      }
+    },
+    computed: {
+      ...mapState({
+        lastSearchComputed: "lastSearch"
+      })
     }
+}
 </script>
