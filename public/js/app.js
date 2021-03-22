@@ -1960,6 +1960,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
@@ -1967,8 +1972,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       lastSearch: this.$store.state.lastSearch
     };
   },
-  computed: _objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])({
+  computed: _objectSpread(_objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapState"])({
     lastSearchComputed: "lastSearch"
+  })), Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])({
+    itemsInBasket: "itemsInBasket"
   }))
 });
 
@@ -2189,6 +2196,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -2219,7 +2234,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   computed: _objectSpread(_objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapState"])({
     lastSearch: "lastSearch"
   })), {}, {
-    inBasketAlready: function inBasketAlready() {}
+    inBasketAlreadyFromGetters: function inBasketAlreadyFromGetters() {
+      if (null == this.bookable) {
+        return false;
+      }
+
+      return this.$store.getters.inBasketAlready(this.bookable.id);
+    }
   }),
   methods: {
     checkPrice: function checkPrice(hasAvailability) {
@@ -2260,15 +2281,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           }
         }, _callee, null, [[3, 9]]);
       }))();
+    },
+    addToBasket: function addToBasket() {
+      this.$store.dispatch("addToBasket", {
+        bookable: this.bookable,
+        price: this.price,
+        dates: this.lastSearch
+      });
+    },
+    removeFromBasket: function removeFromBasket() {
+      this.$store.dispatch("removeFromBasket", this.bookable.id);
     }
-  },
-  addToBasket: function addToBasket() {// this.$store.dispatch("addToBasket", {
-    //   bookable: this.bookable,
-    //   price: this.price,
-    //   dates: this.lastSearch
-    // });
-  },
-  removeFromBasket: function removeFromBasket() {// this.$store.dispatch("removeFromBasket", this.bookable.id);
   }
 });
 
@@ -61596,6 +61619,19 @@ var render = function() {
           [_vm._v("LaravelBnb")]
         ),
         _vm._v(" "),
+        _c(
+          "router-link",
+          { staticClass: "btn nav-button", attrs: { to: { name: "home" } } },
+          [
+            _vm._v("\n        Basket\n        "),
+            _vm.itemsInBasket
+              ? _c("span", { staticClass: "badge badge-secondary" }, [
+                  _vm._v(_vm._s(_vm.itemsInBasket))
+                ])
+              : _vm._e()
+          ]
+        ),
+        _vm._v(" "),
         _c("ul", { staticClass: "navbar-nav" })
       ],
       1
@@ -61852,13 +61888,30 @@ var render = function() {
                 "button",
                 {
                   staticClass: "btn btn-outline-secondary btn-block",
-                  attrs: { disabled: _vm.inBasketAlready },
+                  attrs: { disabled: _vm.inBasketAlreadyFromGetters },
                   on: { click: _vm.addToBasket }
                 },
                 [_vm._v("Book now")]
               )
             : _vm._e()
-        ])
+        ]),
+        _vm._v(" "),
+        _vm.inBasketAlreadyFromGetters
+          ? _c(
+              "button",
+              {
+                staticClass: "btn btn-outline-secondary btn-block",
+                on: { click: _vm.removeFromBasket }
+              },
+              [_vm._v("Remove from basket")]
+            )
+          : _vm._e(),
+        _vm._v(" "),
+        _vm.inBasketAlreadyFromGetters
+          ? _c("div", { staticClass: "mt-4 text-muted warning" }, [
+              _vm._v("Seems like you've added this object to basket already.")
+            ])
+          : _vm._e()
       ],
       1
     )
@@ -80159,11 +80212,25 @@ __webpack_require__.r(__webpack_exports__);
     lastSearch: {
       from: null,
       to: null
+    },
+    basket: {
+      items: []
     }
   },
   mutations: {
     setLastSearch: function setLastSearch(state, payload) {
       state.lastSearch = payload;
+    },
+    addToBasket: function addToBasket(state, payload) {
+      state.basket.items.push(payload);
+    },
+    removeFromBasket: function removeFromBasket(state, payload) {
+      state.basket.items = state.basket.items.filter(function (item) {
+        return item.bookable.id != payload;
+      });
+    },
+    setBasket: function setBasket(state, payload) {
+      state.basket = payload;
     }
   },
   actions: {
@@ -80177,6 +80244,44 @@ __webpack_require__.r(__webpack_exports__);
       if (lastSearch) {
         context.commit('setLastSearch', JSON.parse(lastSearch));
       }
+
+      var basket = localStorage.getItem('basket');
+
+      if (basket) {
+        context.commit('setBasket', JSON.parse(basket));
+      }
+    },
+    addToBasket: function addToBasket(_ref, payload) {
+      var commit = _ref.commit,
+          state = _ref.state;
+      commit('addToBasket', payload);
+      localStorage.setItem('basket', JSON.stringify(state.basket));
+    },
+    removeFromBasket: function removeFromBasket(_ref2, payload) {
+      var commit = _ref2.commit,
+          state = _ref2.state;
+      commit('removeFromBasket', payload);
+      localStorage.setItem('basket', JSON.stringify(state.basket));
+    },
+    clearBasket: function clearBasket(_ref3, payload) {
+      var commit = _ref3.commit,
+          state = _ref3.state;
+      commit("setBasket", {
+        items: []
+      });
+      localStorage.setItem("basket", JSON.stringify(state.basket));
+    }
+  },
+  getters: {
+    itemsInBasket: function itemsInBasket(state) {
+      return state.basket.items.length;
+    },
+    inBasketAlready: function inBasketAlready(state) {
+      return function (id) {
+        return state.basket.items.reduce(function (result, item) {
+          return result || item.bookable.id == id;
+        }, false);
+      };
     }
   }
 });

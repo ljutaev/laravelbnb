@@ -29,9 +29,17 @@
           class="btn btn-outline-secondary btn-block"
           v-if="price"
           @click="addToBasket"
-          :disabled="inBasketAlready"
+          :disabled="inBasketAlreadyFromGetters"
         >Book now</button>
       </transition>
+
+      <button
+          class="btn btn-outline-secondary btn-block"
+          v-if="inBasketAlreadyFromGetters"
+          @click="removeFromBasket"
+        >Remove from basket</button>
+
+      <div v-if="inBasketAlreadyFromGetters" class="mt-4 text-muted warning">Seems like you've added this object to basket already.</div>
     </div>
   </div>
 </template>
@@ -65,9 +73,14 @@
 		},
     computed: {
       ...mapState({
-        lastSearch: "lastSearch"
+        lastSearch: "lastSearch",
       }),
-      inBasketAlready() {}
+      inBasketAlreadyFromGetters() {
+        if(null == this.bookable) {
+          return false
+        }
+        return this.$store.getters.inBasketAlready(this.bookable.id)
+      }
     },
     methods: {
       async checkPrice(hasAvailability) {
@@ -81,18 +94,18 @@
         } catch(err) {
           this.price = null;
         }
+      },
+      addToBasket() {
+        this.$store.dispatch("addToBasket", {
+          bookable: this.bookable,
+          price: this.price,
+          dates: this.lastSearch
+        });
+      },
+      removeFromBasket() {
+        this.$store.dispatch("removeFromBasket", this.bookable.id);
       }
-    },
-    addToBasket() {
-      // this.$store.dispatch("addToBasket", {
-      //   bookable: this.bookable,
-      //   price: this.price,
-      //   dates: this.lastSearch
-      // });
-    },
-    removeFromBasket() {
-      // this.$store.dispatch("removeFromBasket", this.bookable.id);
-    }
+    },    
 	}
 </script>
 
