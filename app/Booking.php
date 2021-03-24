@@ -5,6 +5,7 @@ namespace App;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use App\Address;
 
 class Booking extends Model
 {
@@ -17,7 +18,12 @@ class Booking extends Model
 
     public function review()
     {
-        $this->hasOne(Review::class);
+        return $this->hasOne(Review::class);
+    }
+
+    public function address()
+    {
+        return $this->belongsTo(Address::class);
     }
 
     public function scopeBetweenDates(Builder $query, $from, $to)
