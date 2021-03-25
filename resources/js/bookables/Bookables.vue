@@ -45,7 +45,7 @@
 		created() { 
 			const request = axios
 				.get('/api/bookables')
-				.then(responce => (this.bookables = responce.data))
+				.then(responce => (this.bookables = responce.data.data))
 			console.log(request)
 		}
 	}

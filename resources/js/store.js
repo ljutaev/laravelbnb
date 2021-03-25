@@ -1,44 +1,57 @@
+import { isLoggedIn, logOut } from "./shared/utils/auth";
+
 export default {
-	state: {
-		lastSearch: {
-			from: null,
-			to: null
-		},
-		basket: {
-			items: []
-		}
-	},
-	mutations: {
-		setLastSearch(state, payload) {
-			state.lastSearch = payload
-		},
-		addToBasket(state, payload) {
-			state.basket.items.push(payload)
-		},
-		removeFromBasket(state, payload) {
-			state.basket.items = state.basket.items.filter(item => item.bookable.id != payload)
-		},
-		setBasket(state, payload) {
+    state: {
+        lastSearch: {
+            from: null,
+            to: null
+        },
+        basket: {
+            items: []
+        },
+        isLoggedIn: false,
+        user: {}
+    },
+    mutations: {
+        setLastSearch(state, payload) {
+            state.lastSearch = payload;
+        },
+        addToBasket(state, payload) {
+            state.basket.items.push(payload);
+        },
+        removeFromBasket(state, payload) {
+            state.basket.items = state.basket.items.filter(item => item.bookable.id !== payload);
+        },
+        setBasket(state, payload) {
             state.basket = payload;
         },
-	},
-	actions: {
-		setLastSearch(context, payload) {
-			context.commit('setLastSearch', payload)
-			localStorage.setItem('lastSearch', JSON.stringify(payload))
-		},
-		loadStoredState(context) {
-			const lastSearch = localStorage.getItem('lastSearch')
-			if(lastSearch) {
-				context.commit('setLastSearch', JSON.parse(lastSearch))
-			}
+        setUser(state, payload) {
+            state.user = payload;
+        },
+        setLoggedIn(state, payload) {
+            state.isLoggedIn = payload;
+        }
+    },
+    actions: {
+        setLastSearch(context, payload) {
+            context.commit('setLastSearch', payload);
+            localStorage.setItem('lastSearch', JSON.stringify(payload));
+        },
+        loadStoredState(context) {
+            const lastSearch = localStorage.getItem('lastSearch');
+            if (lastSearch) {
+                context.commit('setLastSearch', JSON.parse(lastSearch));
+            }
 
-			const basket = localStorage.getItem('basket');
+            const basket = localStorage.getItem('basket');
             if (basket) {
                 context.commit('setBasket', JSON.parse(basket));
             }
-		},
-		addToBasket({ commit, state }, payload) {
+
+            context.commit("setLoggedIn", isLoggedIn());
+        },
+        addToBasket({ commit, state }, payload) {
+            // context.state, context.commit
             commit('addToBasket', payload);
             localStorage.setItem('basket', JSON.stringify(state.basket));
         },
@@ -50,16 +63,32 @@ export default {
             commit("setBasket", { items: [] });
             localStorage.setItem("basket", JSON.stringify(state.basket));
         },
-	},
-	getters: {
-		itemsInBasket: (state) => state.basket.items.length,
-		inBasketAlready(state) {
-			return function(id) {
-				return state.basket.items.reduce(
-		            (result, item) => result || item.bookable.id == id, 
-		            false
-		        )
-			}
-		}
-	}
-}
+        async loadUser({ commit, dispatch }) {
+            if (isLoggedIn()) {
+                try {
+                    const user = (await axios.get("/user")).data;
+                    commit("setUser", user);
+                    commit("setLoggedIn", true);
+                } catch (error) {
+                    dispatch("logout");
+                }
+            }
+        },
+        logout({ commit }) {
+            commit("setUser", {});
+            commit("setLoggedIn", false);
+            logOut();
+        }
+    },
+    getters: {
+        itemsInBasket: (state) => state.basket.items.length,
+        inBasketAlready(state) {
+            return function (id) {
+                return state.basket.items.reduce(
+                    (result, item) => result || item.bookable.id === id,
+                    false
+                );
+            }
+        }
+    }
+};
