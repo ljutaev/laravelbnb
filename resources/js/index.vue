@@ -49,5 +49,15 @@ export default {
         itemsInBasket: "itemsInBasket"
       })
     },
+    methods: {
+      async logout() {
+        try {
+          axios.post("/logout");
+          this.$store.dispatch("logout");
+        } catch (error) {
+          this.$store.dispatch("logout");
+        }
+      }
+    }
 }
 </script>
